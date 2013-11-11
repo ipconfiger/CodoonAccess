@@ -76,37 +76,6 @@ NSDictionary* formatError(NSString *txtResponse){
      }];
 }
 
-+(void) initWithClientID:(NSString*)clientId AndSecret:(NSString*)secret AndUserName:(NSString*)username AndPassword:(NSString*)password AndScope:(NSString*)scope onComplete:(void (^)(BOOL succes,NSDictionary* error))handler{
-    NSDictionary *params = @{
-                             @"username":username,
-                             @"password":password,
-                             @"grant_type":@"password",
-                             @"client_id":clientId,
-                             @"client_secret":secret,
-                             @"scope":scope
-                             };
-    NSURL *uri = [NSURL URLWithString:[@"http://api.codoon.com/token?" stringByAppendingString:[params urlEncode]]];
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:uri];
-    [request setHTTPMethod:@"GET"];
-    NSString* authToken = [@"basic " stringByAppendingString:[ [@[clientId,secret] componentsJoinedByString:@":"] base64EncodedString]];
-    [request setValue:authToken forHTTPHeaderField:@"Authorization"];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [NSURLConnection sendAsynchronousRequest:request queue:queue
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         NSString *txtResponse = [[NSString alloc] initWithData:data
-                                                       encoding:NSUTF8StringEncoding];
-         if(error!=nil){
-             handler(false,formatError(txtResponse));
-             return;
-         }
-         if (saveToken(txtResponse)){
-             handler(true,@{});
-         }else{
-             handler(false,@{@"error":@"error response",@"error_code":@-2,@"error_description":@"wrong server format"});
-         }
-     }];
-}
 +(void) initWithClientID:(NSString*)clientId AndToken:(NSString*)token AndSecret:(NSString*)secret AndExpin:(NSString*)expIn AndUserId:(NSString*)userId AndSource:(NSString*)source AndCatalog:(NSString*)catalog AndDevice:(NSString*)deviceToken onComplete:(void (^)(BOOL succes,NSDictionary* error))handler{
     NSDictionary* params = @{
                              @"client_id":clientId,

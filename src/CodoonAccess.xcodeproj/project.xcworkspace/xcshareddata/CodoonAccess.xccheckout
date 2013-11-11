@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6BBEA604-1A87-4615-B4B6-4253E796E16D</string>
+	<key>IDESourceControlProjectName</key>
+	<string>CodoonAccess</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D65F4209-BF77-4B52-B75F-8E02C5380117</key>
+		<string>https://github.com/ipconfiger/CodoonAccess.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>src/CodoonAccess.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D65F4209-BF77-4B52-B75F-8E02C5380117</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/ipconfiger/CodoonAccess.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D65F4209-BF77-4B52-B75F-8E02C5380117</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D65F4209-BF77-4B52-B75F-8E02C5380117</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CodoonAccess</string>
+		</dict>
+	</array>
+</dict>
+</plist>

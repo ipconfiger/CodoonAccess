@@ -11,7 +11,6 @@
 @interface CodoonAccess : NSObject
 +(void) initWithToken:(NSString *)accessToken AndSecret:(NSString*)secret AndExpin:(NSString*)expIn;
 +(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,NSDictionary*))handler;
-+(void) initWithClientID:(NSString*)clientId AndSecret:(NSString*)secret AndUserName:(NSString*)username AndPassword:(NSString*)password AndScope:(NSString*)scope onComplete:(void (^)(BOOL,NSDictionary*))handler;
 +(void) initWithClientID:(NSString*)clientId AndToken:(NSString*)token AndSecret:(NSString*)secret AndExpin:(NSString*)expIn AndUserId:(NSString*)userId AndSource:(NSString*)source AndCatalog:(NSString*)catalog AndDevice:(NSString*)deviceToken onComplete:(void (^)(BOOL,NSDictionary*))handler;
 -(NSDictionary*) getToken;
 -(void) postTo:(NSString*)methodName with:(NSDictionary*)params on:(void (^)(BOOL, NSDictionary*))handler;
