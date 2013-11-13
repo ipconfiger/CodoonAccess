@@ -45,6 +45,17 @@ NSDictionary* formatError(NSString *txtResponse){
     expire_in=expIn;
 }
 
++(NSString*) codeUrlWithClientId:(NSString*)clientId AndScope:(NSString*)scope{
+    NSDictionary* params = @{
+                             @"client_id":clientId,
+                             @"redirect_uri":@"http://localhost",
+                             @"response_type":@"code",
+                             @"scope":scope
+                             };
+    return [NSURL URLWithString:[@"http://api.codoon.com/authorize?" stringByAppendingString:[params urlEncode]]];
+}
+
+
 +(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,NSDictionary*))handler{
     NSDictionary *params = @{
                              @"grant_type":@"authorization_code",
@@ -76,37 +87,6 @@ NSDictionary* formatError(NSString *txtResponse){
      }];
 }
 
-+(void) initWithClientID:(NSString*)clientId AndToken:(NSString*)token AndSecret:(NSString*)secret AndExpin:(NSString*)expIn AndUserId:(NSString*)userId AndSource:(NSString*)source AndCatalog:(NSString*)catalog AndDevice:(NSString*)deviceToken onComplete:(void (^)(BOOL succes,NSDictionary* error))handler{
-    NSDictionary* params = @{
-                             @"client_id":clientId,
-                             @"token":token,
-                             @"secret":secret,
-                             @"external_user_id":userId,
-                             @"source":source,
-                             @"expire_in":expIn,
-                             @"catalog":catalog,
-                             @"device_token":deviceToken
-                             };
-    NSURL *uri = [NSURL URLWithString:[@"http://api.codoon.com/external_token?" stringByAppendingString:[params urlEncode]]];
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:uri];
-    [request setHTTPMethod:@"GET"];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [NSURLConnection sendAsynchronousRequest:request queue:queue
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
-     {
-         NSString *txtResponse = [[NSString alloc] initWithData:data
-                                                       encoding:NSUTF8StringEncoding];
-         if(error!=nil){
-             handler(false,formatError(txtResponse));
-             return;
-         }
-         if (saveToken(txtResponse)){
-             handler(true,@{});
-         }else{
-             handler(false,@{@"error":@"error response",@"error_code":@-2,@"error_description":@"wrong server format"});
-         }
-     }];
-}
 
 -(NSDictionary*) getToken{
     return @{@"token":access_token,@"secret":access_secret,@"expire_in":expire_in};
