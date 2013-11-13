@@ -10,21 +10,16 @@
 #import "NSDictionary+UrlEncoding.h"
 #import "Base64.h"
 
-static NSString* access_token;
-static NSString* access_secret;
-static NSString* expire_in;
 const NSString* urlBase = @"http://api.codoon.com/api/";
+static NSOperationQueue *queue = nil;
 
-int saveToken(NSString* tokenString){
+NSDictionary* formatToken(NSString* tokenString){
     NSError* error;
     NSDictionary* tokenData = [NSJSONSerialization JSONObjectWithData:[tokenString dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
     if(error!=nil){
-        return NO;
+        return tokenData;
     }
-    access_token = [tokenData objectForKey:@"access_token"];
-    access_secret = [tokenData objectForKey:@"refresh_token"];
-    expire_in = [tokenData objectForKey:@"expire_in"];
-    return YES;
+    return nil;
 }
 
 NSDictionary* formatError(NSString *txtResponse){
@@ -39,10 +34,10 @@ NSDictionary* formatError(NSString *txtResponse){
 }
 
 @implementation CodoonAccess
-+(void) initWithToken:(NSString *)accessToken AndSecret:(NSString*)secret AndExpin:(NSString*)expIn{
-    access_token=accessToken;
-    access_secret=secret;
-    expire_in=expIn;
+{
+    NSString* access_token;
+    NSString* access_secret;
+    NSString* expire_in;
 }
 
 +(NSString*) codeUrlWithClientId:(NSString*)clientId AndScope:(NSString*)scope{
@@ -56,7 +51,7 @@ NSDictionary* formatError(NSString *txtResponse){
 }
 
 
-+(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,NSDictionary*))handler{
++(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,CodoonAccess*,NSDictionary*))handler{
     NSDictionary *params = @{
                              @"grant_type":@"authorization_code",
                              @"client_id":clientId,
@@ -69,24 +64,39 @@ NSDictionary* formatError(NSString *txtResponse){
     [request setHTTPMethod:@"GET"];
     NSString* authToken = [@"basic " stringByAppendingString:[ [@[clientId,secret] componentsJoinedByString:@":"] base64EncodedString]];
     [request setValue:authToken forHTTPHeaderField:@"Authorization"];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    if(queue==nil){
+        queue = [[NSOperationQueue alloc] init];
+    }
     [NSURLConnection sendAsynchronousRequest:request queue:queue
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
          NSString *txtResponse = [[NSString alloc] initWithData:data
                                                        encoding:NSUTF8StringEncoding];
          if(error!=nil){
-             handler(false,formatError(txtResponse));
+             handler(false,nil,formatError(txtResponse));
              return;
          }
-         if (saveToken(txtResponse)){
-             handler(true,@{});
+         NSDictionary* token = formatError(txtResponse);
+         if (token!=nil){
+             handler(true,[[CodoonAccess alloc] initWithToken:[token objectForKey:@"access_token"] AndSecret:[token objectForKey:@"refresh_token"] AndExpin:[token objectForKey:@"expire_in"]],@{});
          }else{
-             handler(false,@{@"error":@"error response",@"error_code":@-2,@"error_description":@"wrong server format"});
+             handler(false,nil, @{@"error":@"error response",@"error_code":@-2,@"error_description":@"wrong server format"});
          }
      }];
 }
 
+
+-(id) initWithToken:(NSString *)accessToken AndSecret:(NSString*)secret AndExpin:(NSString*)expIn{
+    if (self=[super init]) {
+        access_token=accessToken;
+        access_secret=secret;
+        expire_in=expIn;
+        if (queue==nil){
+            queue = [[NSOperationQueue alloc] init];
+        }
+    }
+    return self;
+}
 
 -(NSDictionary*) getToken{
     return @{@"token":access_token,@"secret":access_secret,@"expire_in":expire_in};
@@ -111,8 +121,6 @@ NSDictionary* formatError(NSString *txtResponse){
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setValue:postDataLengthString forHTTPHeaderField:@"Content-Length"];
     [request setValue:[@"Bearer " stringByAppendingString:access_token] forHTTPHeaderField:@"Authorization"];
-    
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [NSURLConnection sendAsynchronousRequest:request queue:queue
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {
@@ -138,7 +146,6 @@ NSDictionary* formatError(NSString *txtResponse){
     NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:uri];
     [request setHTTPMethod:@"GET"];
     [request setValue:[@"Bearer " stringByAppendingString:access_token] forHTTPHeaderField:@"Authorization"];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [NSURLConnection sendAsynchronousRequest:request queue:queue
                            completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
      {

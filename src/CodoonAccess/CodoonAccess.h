@@ -9,12 +9,14 @@
 #import <Foundation/Foundation.h>
 
 @interface CodoonAccess : NSObject
-//如果在本地已经有了access token用这个初始化
-+(void) initWithToken:(NSString *)accessToken AndSecret:(NSString*)secret AndExpin:(NSString*)expIn;
+
 //如果本地没有access token用这个来生成请求access code的url
 +(NSString*) codeUrlWithClientId:(NSString*)clientId AndScope:(NSString*)scope;
 //得到access code后用这个来初始化access token
-+(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,NSDictionary*))handler;
++(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,CodoonAccess*,NSDictionary*))handler;
+
+//如果在本地已经有了access token用这个初始化
+-(id) initWithToken:(NSString *)accessToken AndSecret:(NSString*)secret AndExpin:(NSString*)expIn;
 //获取access token的字典对象，包含access_token access_secret 和 exprie
 -(NSDictionary*) getToken;
 //post到接口的基础方法，公开出来是方便各位扩展
