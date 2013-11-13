@@ -30,7 +30,6 @@ NSDictionary* formatError(NSString *txtResponse){
     }else{
         return tokenData;
     }
-    
 }
 
 @implementation CodoonAccess
@@ -51,7 +50,7 @@ NSDictionary* formatError(NSString *txtResponse){
 }
 
 
-+(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,CodoonAccess*,NSDictionary*))handler{
++(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,id))handler{
     NSDictionary *params = @{
                              @"grant_type":@"authorization_code",
                              @"client_id":clientId,
@@ -73,14 +72,14 @@ NSDictionary* formatError(NSString *txtResponse){
          NSString *txtResponse = [[NSString alloc] initWithData:data
                                                        encoding:NSUTF8StringEncoding];
          if(error!=nil){
-             handler(false,nil,formatError(txtResponse));
+             handler(false,formatError(txtResponse));
              return;
          }
          NSDictionary* token = formatError(txtResponse);
          if (token!=nil){
-             handler(true,[[CodoonAccess alloc] initWithToken:[token objectForKey:@"access_token"] AndSecret:[token objectForKey:@"refresh_token"] AndExpin:[token objectForKey:@"expire_in"]],@{});
+             handler(true,[[CodoonAccess alloc] initWithToken:[token objectForKey:@"access_token"] AndSecret:[token objectForKey:@"refresh_token"] AndExpin:[token objectForKey:@"expire_in"]]);
          }else{
-             handler(false,nil, @{@"error":@"error response",@"error_code":@-2,@"error_description":@"wrong server format"});
+             handler(false, @{@"error":@"error response",@"error_code":@-2,@"error_description":@"wrong server format"});
          }
      }];
 }

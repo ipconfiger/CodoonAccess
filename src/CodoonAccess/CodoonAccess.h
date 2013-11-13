@@ -13,7 +13,7 @@
 //如果本地没有access token用这个来生成请求access code的url
 +(NSString*) codeUrlWithClientId:(NSString*)clientId AndScope:(NSString*)scope;
 //得到access code后用这个来初始化access token
-+(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,CodoonAccess*,NSDictionary*))handler;
++(void) initWithCode:(NSString*)accessCode AndClientID:(NSString*)clientId AndSecret:(NSString*)secret AndScope:(NSString*)scope onComplete:(void (^)(BOOL,id))handler;
 
 //如果在本地已经有了access token用这个初始化
 -(id) initWithToken:(NSString *)accessToken AndSecret:(NSString*)secret AndExpin:(NSString*)expIn;
